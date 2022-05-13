@@ -2,7 +2,7 @@
   <div class="grid md:grid-cols-2 gap-4">
 
     <!-- CONFIRMED -->
-    <div class="shadow-md bg-blue-100 p-10 text-center rounded">
+    <div class="shadow-lg bg-blue-100 p-10 text-center rounded-md">
       <h3 class="text-3xl text-blue-900 font-bold mb-4">
         Cases
       </h3>
@@ -17,7 +17,7 @@
     </div>
 
     <!-- DEATHS -->
-    <div class="shadow-md bg-red-400 p-10 text-center rounded">
+    <div class="shadow-lg bg-red-400 p-10 text-center rounded-md">
       <h3 class="text-3xl text-red-900 font-bold mb-4">
         Deaths
       </h3>

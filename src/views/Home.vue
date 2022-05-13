@@ -18,8 +18,10 @@
     <button @click="clearCountryData" v-if="stats.Country" class="bg-green-700 text-white rounded p-3 mt-10 focus:outline-none hover:bg-green-600">
       Clear Country
     </button>
-    
+      
     <Bar class="mt-10" v-if="stats.Country" :chart-data="chartData" :options="chartOptions" />
+
+    <Ladder class="mt-10 mb-10" :covidData="countries" />
 
   </main>
   <main class="flex flex-col align-center justify-center text-center" v-else>
@@ -42,6 +44,7 @@ import axios from "axios";
 import DataTitle from "@/components/DataTitle"
 import DataBoxes from "@/components/DataBoxes"
 import CountrySelect from "@/components/CountrySelect"
+import Ladder from "@/components/Ladder"
 import moment from 'moment'
 import { Bar, Line } from 'vue-chartjs'
 import { SelfBuildingSquareSpinner  } from 'epic-spinners'
@@ -65,7 +68,8 @@ export default {
     CountrySelect,
     Line,
     Bar,
-    SelfBuildingSquareSpinner
+    SelfBuildingSquareSpinner,
+    Ladder
   },
   data () {
     return {
@@ -92,6 +96,14 @@ export default {
         ]
       }
     }
+  },
+  async created() {
+    const data = await this.fetchCovidData();
+
+    this.dataDate = data.Date
+    this.stats = data.Global
+    this.countries = data.Countries
+    this.loading = false
   },
   methods: {
     async fetchCovidData() {
@@ -145,14 +157,6 @@ export default {
       this.stats = data.Global
       this.loading = false
     }
-  },
-  async created() {
-    const data = await this.fetchCovidData();
-
-    this.dataDate = data.Date
-    this.stats = data.Global
-    this.countries = data.Countries
-    this.loading = false
   },
 };
 </script>
