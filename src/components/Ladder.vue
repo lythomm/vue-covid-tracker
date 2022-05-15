@@ -3,30 +3,32 @@
     <div class="flex flex-column">
 
       <!-- TOTAL CONFIRMED -->
-      <div class="flex-1 mr-5 bg-blue-100 p-3 rounded-md shadow-lg">
-        <div class="text-center mb-3">
+      <div class="flex-1 mr-5 bg-white p-3 rounded-md shadow-lg">
+        <div class="text-center text-blue-500 mb-3">
           <span class="font-bold">Confirmed by Countries</span>
         </div>
         <div class="flex" v-for="(ladderDataConfirmedByCountry, index) in ladderDataConfirmedByCountries" :key="ladderDataConfirmedByCountry.Country">
-          <div class="flex-auto">
-            {{index+1}}. {{ ladderDataConfirmedByCountry.Country }} 
+          <div class="flex-auto border-r-2 border-b-2 p-1">
+            <span>{{index+1}}. </span> 
+            <span class="cursor-pointer" @click="getCountry(ladderDataConfirmedByCountry)">{{ ladderDataConfirmedByCountry.Country }}</span>
           </div>
-          <div class="flex-2 text-left">
+          <div class="flex-2 text-left border-b-2 p-1">
             {{ numberWithCommas(ladderDataConfirmedByCountry.TotalConfirmed) }}
           </div>
         </div>
       </div>
 
       <!-- TOTAL DEATHS -->
-      <div class="flex-1 bg-red-400 p-3 rounded-md shadow-lg">
-        <div class="text-center mb-3">
+      <div class="flex-1 bg-white p-3 rounded-md shadow-lg">
+        <div class="text-center text-red-600 mb-3">
           <span class="font-bold">Deaths by Countries</span>
         </div>
         <div class="flex" v-for="(ladderDataDeathsByCountry, index) in ladderDataDeathsByCountries" :key="ladderDataDeathsByCountry.Country">
-          <div class="flex-auto">
-            {{index+1}}. {{ ladderDataDeathsByCountry.Country }} 
+          <div class="flex-auto border-r-2 border-b-2 p-1">
+            <span>{{index+1}}. </span> 
+            <span class="cursor-pointer" @click="getCountry(ladderDataDeathsByCountry)">{{ ladderDataDeathsByCountry.Country }}</span>
           </div>
-          <div class="flex-2 text-left">
+          <div class="flex-2 text-left border-b-2 p-1">
             {{ numberWithCommas(ladderDataDeathsByCountry.TotalDeaths) }}
           </div>
         </div>
@@ -73,6 +75,10 @@ export default {
     },
     numberWithCommas (x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    getCountry (country) {
+      console.log(country)
+      this.$emit('getCountryFromChild', country)
     }
   }
 }

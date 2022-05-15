@@ -13,15 +13,18 @@
     
     <DataBoxes :stats="stats" />
     
-    <CountrySelect :countries="countries" @get-country="getCountryData" />
-
-    <button @click="clearCountryData" v-if="stats.Country" class="bg-green-700 text-white rounded p-3 mt-10 focus:outline-none hover:bg-green-600">
-      Clear Country
-    </button>
+    <div class="flex">
+      <CountrySelect class="shadow-md" :countries="countries" @get-country="getCountryData" />
+      <button @click="clearCountryData" v-if="stats.Country" class="bg-green-700 text-white rounded p-3 mt-10 ml-3 focus:outline-none hover:bg-green-600 shadow-md">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
+        </svg>
+      </button>
+    </div>
       
     <Bar class="mt-10" v-if="stats.Country" :chart-data="chartData" :options="chartOptions" />
 
-    <Ladder class="mt-10 mb-10" :covidData="countries" />
+    <Ladder class="mt-10 mb-10" :covidData="countries" @getCountryFromChild="getCountryData" />
 
   </main>
   <main class="flex flex-col align-center justify-center text-center" v-else>
@@ -46,6 +49,7 @@ import DataBoxes from "@/components/DataBoxes"
 import CountrySelect from "@/components/CountrySelect"
 import Ladder from "@/components/Ladder"
 import moment from 'moment'
+import { useToast } from "vue-toastification";
 import { Bar, Line } from 'vue-chartjs'
 import { SelfBuildingSquareSpinner  } from 'epic-spinners'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineElement, PointElement } from 'chart.js'
@@ -58,7 +62,8 @@ ChartJS.register(
   LineElement,
   LinearScale,
   PointElement,
-  CategoryScale
+  CategoryScale,
+  useToast
 )
 export default {
   name: "Home",
@@ -119,13 +124,32 @@ export default {
       return res.data
     },
     async getCountryData (country) {
+      console.log({country})
       this.fetching = true
-      this.confirmedByDay = await this.fetchCovidDataConfirmedByDay(country.Country)
-      this.deathsByDay = await this.fetchCovidDataDeathsByDay(country.Country)
+      try {
+        this.confirmedByDay = await this.fetchCovidDataConfirmedByDay(country.Country)
+        this.deathsByDay = await this.fetchCovidDataDeathsByDay(country.Country)
+      } catch (error) {
+        this.sendNotif()
+        console.error(error)
+        this.fetching = false
+        this.clearCountryData()
+      }
+      this.fetching = false
       this.formatData()
       this.stats = country
       this.title = country.Country
-      this.fetching = false
+    },
+    sendNotif () {
+      const toast = useToast()
+
+      toast.error("An error has occurred...", {
+        timeout: 4000,
+        pauseOnFocusLoss: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        hideProgressBar: true,
+      })
     },
     formatData () {
       const dates = this.confirmedByDay.map(d => moment(d.Date).format('MMM Do YYYY'))
